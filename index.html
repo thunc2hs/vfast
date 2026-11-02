@@ -1,0 +1,787 @@
+<title>TikTask</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@800&family=Inter:wght@400;500;600;700;800&display=swap">
+
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TikTask v3 — Void Premium
+   Syne 800 = logo only  /  Inter = all numbers + UI
+   Gold = earnings  /  Pink = TikTok brand  /  Green = done
+═══════════════════════════════════════════════════════════════ */
+:root {
+  --bg:     #07080a;
+  --s1:     #0d1018;
+  --s2:     #151922;
+  --edge:   #1d2234;
+  --dim:    #272b3e;
+  --ink:    #dce0f2;
+  --sub:    #4d5470;
+  --gold:   #f0b42a;
+  --gold-d: #7a5500;
+  --gold-bg:#160d00;
+  --pink:   #fe2c55;
+  --green:  #1dc862;
+  --grn-d:  #0b4226;
+  --grn-bg: #061510;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100%;
+  padding-left:  max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0; overflow-x: hidden;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 60; background: var(--bg);
+}
+
+/* ── HEADER ── */
+.hdr {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 50;
+  background: rgba(7,8,10,.92); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--edge);
+  margin-left:  calc(-1 * max(16px, env(safe-area-inset-left,  0px)));
+  margin-right: calc(-1 * max(16px, env(safe-area-inset-right, 0px)));
+  padding: 12px max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+  display: flex; align-items: center; justify-content: space-between;
+}
+.logo {
+  font-family: 'Syne', 'Inter', sans-serif; font-weight: 800;
+  font-size: 20px; line-height: 1; letter-spacing: 0;
+}
+.logo-tik { color: var(--ink); }
+.logo-task { color: var(--pink); }
+.bal-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--gold-bg); border: 1px solid var(--gold-d);
+  border-radius: 100px; padding: 6px 12px 6px 9px;
+  font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 700;
+  font-variant-numeric: tabular-nums; color: var(--gold); line-height: 1;
+}
+.bal-dot { width: 7px; height: 7px; background: var(--gold); border-radius: 50%; flex-shrink: 0; }
+
+/* ── WALLET ── */
+.wallet {
+  background: var(--s1); border: 1px solid var(--edge);
+  border-radius: 22px; padding: 22px 20px 18px;
+  margin-top: 16px; margin-bottom: 12px;
+}
+.wallet-eyebrow {
+  font-size: 10.5px; font-weight: 600; text-transform: uppercase;
+  letter-spacing: .14em; color: var(--sub); margin-bottom: 10px;
+}
+.wallet-bal {
+  font-family: 'Inter', sans-serif; font-weight: 800;
+  font-size: 40px; line-height: 1.1; color: var(--gold);
+  margin-bottom: 18px; font-variant-numeric: tabular-nums;
+  letter-spacing: -.5px; word-break: break-all;
+}
+.wallet-bal .sym { font-size: 20px; font-weight: 700; margin-right: 2px; opacity: .7; vertical-align: 4px; }
+.wallet-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-bottom: 16px; }
+.wst { background: var(--s2); border-radius: 12px; padding: 11px 13px; }
+.wst-lbl { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--sub); margin-bottom: 4px; }
+.wst-val { font-size: 16px; font-weight: 700; font-variant-numeric: tabular-nums; color: var(--ink); }
+.wst-val.g { color: var(--green); }
+.prog-row {
+  display: flex; justify-content: space-between; font-size: 12px;
+  color: var(--sub); margin-bottom: 8px; font-variant-numeric: tabular-nums;
+}
+.prog-row strong { color: var(--ink); font-weight: 600; }
+.prog-track { height: 4px; background: var(--dim); border-radius: 2px; overflow: hidden; margin-bottom: 16px; }
+.prog-fill {
+  height: 100%; background: linear-gradient(90deg, var(--pink), var(--gold));
+  border-radius: 2px; width: 0%; transition: width .6s cubic-bezier(.4,0,.2,1);
+}
+.btn-w {
+  width: 100%; background: var(--gold); color: #07080a;
+  border: none; border-radius: 12px; padding: 13px;
+  font-family: 'Inter', sans-serif; font-size: 15px;
+  font-weight: 700; cursor: pointer; letter-spacing: -.1px;
+  transition: opacity .15s, transform .1s;
+}
+.btn-w:not(:disabled):active { transform: scale(.98); opacity: .82; }
+.btn-w:disabled { background: var(--dim); color: var(--sub); cursor: not-allowed; }
+
+/* ── SECTION ── */
+.sec-hd { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.sec-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .12em; color: var(--sub); }
+.sec-count { font-size: 12px; color: var(--sub); font-variant-numeric: tabular-nums; }
+.sec-count em { color: var(--green); font-style: normal; font-weight: 700; }
+
+/* ── TASK CARDS ── */
+.list { display: flex; flex-direction: column; gap: 8px; padding-bottom: max(48px, env(safe-area-inset-bottom, 0px)); }
+.lcard { background: var(--s1); border: 1px solid var(--edge); border-radius: 18px; overflow: hidden; transition: border-color .25s; }
+.lcard.complete { border-color: var(--grn-d); }
+.lcard-hd {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; cursor: pointer;
+  user-select: none; -webkit-tap-highlight-color: transparent;
+}
+.lcard-hd:active { opacity: .75; }
+.task-badge { font-family: 'Inter', sans-serif; font-weight: 800; font-size: 14px; color: var(--sub); flex-shrink: 0; min-width: 64px; }
+.lcard.complete .task-badge { color: var(--green); }
+.lcard-meta { flex: 1; min-width: 0; }
+.lprog { font-size: 12px; color: var(--sub); font-variant-numeric: tabular-nums; }
+.lprog .n { color: var(--ink); font-weight: 700; }
+.lcard.complete .lprog .n { color: var(--green); }
+.lcard-earned { font-size: 12px; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; opacity: 0; transition: opacity .3s; }
+.lcard.complete .lcard-earned { opacity: 1; }
+.lchev { color: var(--dim); flex-shrink: 0; display: flex; transition: transform .25s cubic-bezier(.4,0,.2,1); }
+.lcard.open .lchev { transform: rotate(180deg); color: var(--sub); }
+.lbody { display: none; padding: 0 14px 14px; }
+.lcard.open .lbody { display: block; }
+.sep { height: 1px; background: var(--edge); margin-bottom: 11px; }
+
+/* task grid */
+.tgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+.tbtn {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 8px;
+  background: var(--s2); border: 1px solid var(--edge);
+  border-radius: 13px; padding: 12px;
+  cursor: pointer; color: var(--ink);
+  font-family: 'Inter', sans-serif; text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .13s, border-color .13s; width: 100%;
+}
+.tbtn:not(.done):hover  { background: #1b1f30; border-color: #2b3050; }
+.tbtn:not(.done):active { opacity: .7; }
+.tbtn.done { background: var(--grn-bg); border-color: var(--grn-d); cursor: default; }
+.tbtn.copy { grid-column: 1 / -1; flex-direction: row; align-items: center; }
+.tbtn-top { display: flex; align-items: center; gap: 7px; width: 100%; }
+.tbtn-ico { width: 17px; height: 17px; flex-shrink: 0; }
+.tbtn-name { font-size: 12.5px; font-weight: 600; line-height: 1.2; }
+.tbtn.done .tbtn-name { color: var(--green); }
+.tbtn-reward { font-size: 14px; font-weight: 700; color: var(--gold); font-variant-numeric: tabular-nums; }
+.tbtn.done .tbtn-reward { color: var(--green); opacity: .8; }
+.tbtn.copy .tbtn-top { flex: 1; min-width: 0; }
+.tbtn.copy .tbtn-reward { margin-left: auto; white-space: nowrap; }
+.tbtn-check { margin-left: auto; flex-shrink: 0; }
+
+/* ── OVERLAYS ── */
+.overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  display: flex; align-items: flex-end;
+  padding: 0 max(16px, env(safe-area-inset-left,0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+}
+.overlay[hidden] { display: none !important; }
+.modal {
+  width: 100%; max-width: 480px; margin: 0 auto;
+  background: var(--s1); border: 1px solid var(--edge);
+  border-radius: 24px 24px 20px 20px;
+  max-height: 88vh; display: flex; flex-direction: column; overflow: hidden;
+}
+.modal-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px 14px; border-bottom: 1px solid var(--edge); flex-shrink: 0;
+}
+.modal-title { font-family: 'Inter', sans-serif; font-size: 17px; font-weight: 800; }
+.modal-x {
+  width: 30px; height: 30px; background: var(--s2);
+  border: none; border-radius: 50%; cursor: pointer;
+  color: var(--sub); font-size: 18px; display: flex;
+  align-items: center; justify-content: center; font-family: inherit;
+  transition: background .15s;
+}
+.modal-x:hover { background: var(--dim); color: var(--ink); }
+.modal-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
+
+/* terms */
+.terms-sec { margin-bottom: 16px; }
+.terms-sec h3 { font-size: 12px; font-weight: 700; color: var(--gold); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .07em; }
+.terms-sec p, .terms-sec li { font-size: 13.5px; line-height: 1.7; color: #6878a0; margin-bottom: 5px; }
+.terms-sec ul { padding-left: 16px; }
+.terms-sec strong { color: var(--ink); }
+.terms-chk-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 14px 20px; border-top: 1px solid var(--edge); flex-shrink: 0;
+}
+.terms-chk-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold); flex-shrink: 0; margin-top: 2px; cursor: pointer; }
+.terms-chk-row label { font-size: 13px; color: var(--sub); cursor: pointer; line-height: 1.5; }
+.terms-chk-row label strong { color: var(--ink); }
+.terms-foot { padding: 10px 20px 16px; flex-shrink: 0; }
+
+/* withdraw form */
+.form-group { margin-bottom: 13px; }
+.form-label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--sub); margin-bottom: 6px; }
+.form-input {
+  width: 100%; background: var(--s2); border: 1px solid var(--edge);
+  border-radius: 11px; padding: 11px 14px;
+  font-family: 'Inter', sans-serif; font-size: 14px; color: var(--ink);
+  outline: none; transition: border-color .15s; appearance: none;
+}
+.form-input:focus { border-color: var(--gold); }
+.form-input::placeholder { color: var(--sub); }
+.form-hint { font-size: 12px; color: var(--sub); margin-top: 5px; }
+.form-hint strong { color: var(--gold); font-variant-numeric: tabular-nums; }
+.min-note { font-size: 12px; color: var(--sub); margin-bottom: 14px; padding: 10px 13px; background: var(--s2); border-radius: 10px; border-left: 3px solid var(--gold-d); line-height: 1.5; }
+.min-note strong { color: var(--gold); }
+.wd-foot { padding: 10px 20px 16px; border-top: 1px solid var(--edge); flex-shrink: 0; }
+
+/* bill */
+.bill-body { padding: 16px 18px; }
+.bill-success-hd { text-align: center; padding: 16px 0 20px; }
+.bill-circle {
+  width: 58px; height: 58px; margin: 0 auto 12px;
+  background: var(--grn-bg); border: 2px solid var(--grn-d);
+  border-radius: 50%; display: flex; align-items: center; justify-content: center;
+}
+.bill-success-hd h3 { font-size: 17px; font-weight: 800; color: var(--green); margin-bottom: 4px; }
+.bill-success-hd .bill-amount { font-size: 30px; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; margin-top: 6px; }
+.bill-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+.bill-table tr { border-bottom: 1px solid var(--edge); }
+.bill-table tr:last-child { border-bottom: none; }
+.bill-table td { padding: 9px 0; font-size: 13px; line-height: 1.4; }
+.bill-table td:first-child { color: var(--sub); width: 42%; }
+.bill-table td:last-child { color: var(--ink); font-weight: 600; text-align: right; word-break: break-all; }
+.bill-table .ok { color: var(--green) !important; }
+.bill-table .mono { font-family: 'Courier New', monospace; font-size: 12px; }
+.bill-export-wrap { margin-top: 6px; }
+.bill-img-out { margin-top: 10px; display: none; }
+.bill-img-out img { width: 100%; border-radius: 10px; display: block; }
+.bill-img-hint { font-size: 11.5px; color: var(--sub); text-align: center; margin-top: 7px; }
+
+/* shared button */
+.btn-primary {
+  width: 100%; background: var(--gold); color: #07080a;
+  border: none; border-radius: 12px; padding: 13px;
+  font-family: 'Inter', sans-serif; font-size: 15px;
+  font-weight: 700; cursor: pointer; transition: opacity .15s, transform .1s;
+}
+.btn-primary:not(:disabled):active { transform: scale(.98); opacity: .82; }
+.btn-primary:disabled { background: var(--dim); color: var(--sub); cursor: not-allowed; }
+.btn-secondary {
+  width: 100%; background: transparent; color: var(--ink);
+  border: 1px solid var(--edge); border-radius: 12px; padding: 12px;
+  font-family: 'Inter', sans-serif; font-size: 14px;
+  font-weight: 600; cursor: pointer; margin-top: 8px;
+  transition: background .15s;
+}
+.btn-secondary:hover { background: var(--s2); }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: max(28px, env(safe-area-inset-bottom, 0px));
+  left: 50%; transform: translateX(-50%) translateY(10px);
+  max-width: calc(100vw - 40px);
+  background: var(--s2); border: 1px solid var(--edge);
+  border-radius: 100px; padding: 9px 20px;
+  font-size: 13px; font-weight: 500; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  opacity: 0; pointer-events: none; z-index: 400;
+  transition: opacity .22s, transform .22s;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+
+<header class="hdr">
+  <div class="logo"><span class="logo-tik">Tik</span><span class="logo-task">Task</span></div>
+  <div class="bal-chip"><div class="bal-dot"></div><span id="chipBal">0₫</span></div>
+</header>
+
+<div class="wallet">
+  <div class="wallet-eyebrow">Số dư của bạn</div>
+  <div class="wallet-bal"><span class="sym">₫</span><span id="walBal">0</span></div>
+  <div class="wallet-stats">
+    <div class="wst"><div class="wst-lbl">Đã kiếm</div><div class="wst-val g" id="walEarned">0₫</div></div>
+    <div class="wst"><div class="wst-lbl">Đã rút</div><div class="wst-val" id="walWithdrawn">0₫</div></div>
+  </div>
+  <div class="prog-row">
+    <span>Tiến độ nhiệm vụ</span>
+    <span><strong id="progDone">0</strong> / 85</span>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+  <button class="btn-w" id="btnWithdraw" disabled>Rút tiền</button>
+</div>
+
+<div class="sec-hd">
+  <div class="sec-label">Nhiệm vụ</div>
+  <div class="sec-count"><em id="scDone">0</em> / 17 link xong</div>
+</div>
+<div class="list" id="list"></div>
+
+<!-- TERMS -->
+<div class="overlay" id="termsOv" hidden>
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">Điều khoản &amp; Chính sách</div></div>
+    <div class="modal-body">
+      <div class="terms-sec">
+        <h3>Về TikTask</h3>
+        <p>TikTask là nền tảng thực hiện nhiệm vụ TikTok có thưởng. Hoàn thành nhiệm vụ và nhận tiền vào số dư tài khoản.</p>
+      </div>
+      <div class="terms-sec">
+        <h3>Quy định</h3>
+        <ul>
+          <li>Mỗi nhiệm vụ chỉ được thực hiện <strong>1 lần duy nhất</strong></li>
+          <li>Phải thực hiện đúng: tim bài, follow, xem đủ video, bình luận thật, sao chép đúng link</li>
+          <li>Nghiêm cấm <strong>tài khoản ảo, bot, phần mềm tự động</strong></li>
+          <li>Vi phạm bị <strong>hủy toàn bộ số dư</strong> và chặn tài khoản vĩnh viễn</li>
+        </ul>
+      </div>
+      <div class="terms-sec">
+        <h3>Phần thưởng</h3>
+        <ul>
+          <li>Tim: <strong>500₫</strong> &nbsp;|&nbsp; Follow: <strong>1.000₫</strong></li>
+          <li>Bình luận: <strong>500₫</strong> &nbsp;|&nbsp; Xem video: <strong>100₫</strong></li>
+          <li>Sao chép liên kết: <strong>250₫</strong></li>
+        </ul>
+      </div>
+      <div class="terms-sec">
+        <h3>Rút tiền</h3>
+        <ul>
+          <li>Tối thiểu <strong>5.000₫</strong> mới được rút</li>
+          <li>Hỗ trợ: <strong>Ngân hàng nội địa, MoMo, ZaloPay, ViettelPay</strong></li>
+          <li>Thời gian xử lý: <strong>1–3 ngày làm việc</strong></li>
+        </ul>
+      </div>
+      <div class="terms-sec">
+        <h3>Miễn trách nhiệm</h3>
+        <p>TikTask không chịu trách nhiệm nếu TikTok thay đổi chính sách hoặc bạn vi phạm điều khoản TikTok. Phần thưởng chỉ mang tính khuyến khích.</p>
+      </div>
+    </div>
+    <div class="terms-chk-row">
+      <input type="checkbox" id="termsChk">
+      <label for="termsChk">Tôi đã đọc và đồng ý với <strong>Điều khoản &amp; Chính sách</strong> của TikTask</label>
+    </div>
+    <div class="terms-foot">
+      <button class="btn-primary" id="termsAccept" disabled>Bắt đầu kiếm tiền</button>
+    </div>
+  </div>
+</div>
+
+<!-- WITHDRAW -->
+<div class="overlay" id="wdOv" hidden>
+  <div class="modal" id="wdModal">
+    <div class="modal-hd">
+      <div class="modal-title" id="wdTitle">Rút tiền</div>
+      <button class="modal-x" id="wdClose">&times;</button>
+    </div>
+    <div class="modal-body" id="wdBody"></div>
+    <div class="wd-foot" id="wdFoot"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  /* ─── CONFIG ─── */
+  var KEY    = 'tiktask_v3';
+  var MIN_WD = 5000;
+  var LINKS  = [
+    'https://vt.tiktok.com/ZSp12stnr/', 'https://vt.tiktok.com/ZSp12txxn/',
+    'https://vt.tiktok.com/ZSp12nvQk/', 'https://vt.tiktok.com/ZSp12HmUr/',
+    'https://vt.tiktok.com/ZSp12WCFt/', 'https://vt.tiktok.com/ZSp12pH7S/',
+    'https://vt.tiktok.com/ZSp1j8a4t/', 'https://vt.tiktok.com/ZSp12pB3Y/',
+    'https://vt.tiktok.com/ZSp12ovjF/', 'https://vt.tiktok.com/ZSp12oGFL/',
+    'https://vt.tiktok.com/ZSp1j6Kq2/', 'https://vt.tiktok.com/ZSp1jjDfM/',
+    'https://vt.tiktok.com/ZSp1j6h2r/', 'https://vt.tiktok.com/ZSp1jegCx/',
+    'https://vt.tiktok.com/ZSp1jdrYB/', 'https://vt.tiktok.com/ZSp1jAPHb/',
+    'https://vt.tiktok.com/ZSp1jLy2p/'
+  ];
+  var TASKS = [
+    { id:'like',    name:'Tim',              type:'open', reward:500  },
+    { id:'follow',  name:'Follow',           type:'open', reward:1000 },
+    { id:'copy',    name:'Sao chép liên kết',type:'copy', reward:250  },
+    { id:'comment', name:'Bình luận',        type:'open', reward:500  },
+    { id:'watch',   name:'Xem video',        type:'open', reward:100  }
+  ];
+  var BANKS = [
+    'Vietcombank (VCB)', 'VietinBank (CTG)', 'BIDV', 'Agribank',
+    'Techcombank (TCB)', 'MBBank', 'VPBank', 'ACB', 'VIB',
+    'Sacombank', 'TPBank', 'SHB', 'HDBank', 'SeABank',
+    'MSB (Maritime Bank)', 'OCB', 'LienVietPostBank', 'NCB',
+    'Eximbank', 'BacABank', 'NamABank', 'PGBank', 'SCB',
+    'MoMo', 'ZaloPay', 'ViettelPay', 'ShopeePay'
+  ];
+  var TOTAL = LINKS.length * TASKS.length;
+
+  /* ─── STATE ─── */
+  var st = { bal:0, earned:0, withdrawn:0, done:{}, history:[], termsOk:false };
+  function load() {
+    try { var r = localStorage.getItem(KEY); if (r) { var o = JSON.parse(r); Object.assign(st, o); } } catch(e) {}
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch(e) {} }
+  function isDone(li, ti) { return !!(st.done[li] && st.done[li][ti]); }
+  function markDone(li, ti, reward) {
+    if (!st.done[li]) st.done[li] = {};
+    st.done[li][ti] = 1; st.bal += reward; st.earned += reward; save();
+  }
+
+  /* ─── UTILS ─── */
+  function vnd(n) { return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '₫'; }
+  function txId() {
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', id = 'TT';
+    for (var i = 0; i < 10; i++) id += chars[Math.floor(Math.random() * chars.length)];
+    return id;
+  }
+  function fmtDate(ts) {
+    var d = new Date(ts);
+    var pad = function(n) { return n < 10 ? '0'+n : ''+n; };
+    return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear()
+      +' '+pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  }
+  function getDevice() {
+    var ua = navigator.userAgent || '', os = 'Unknown', br = 'Unknown';
+    if      (/iPhone/.test(ua))   os = 'iPhone';
+    else if (/iPad/.test(ua))     os = 'iPad';
+    else if (/Android/.test(ua))  os = 'Android';
+    else if (/Windows/.test(ua))  os = 'Windows';
+    else if (/Mac OS/.test(ua))   os = 'macOS';
+    else if (/Linux/.test(ua))    os = 'Linux';
+    if      (/EdgA?\//.test(ua))  br = 'Edge';
+    else if (/OPR\//.test(ua))    br = 'Opera';
+    else if (/Chrome\//.test(ua)) br = 'Chrome';
+    else if (/Firefox\//.test(ua))br = 'Firefox';
+    else if (/Safari\//.test(ua)) br = 'Safari';
+    return br + ' / ' + os;
+  }
+  function getIP(cb) {
+    var done = false;
+    var t = setTimeout(function() { if (!done) { done = true; cb('Ẩn danh'); } }, 4000);
+    try {
+      fetch('https://api.ipify.org?format=json')
+        .then(function(r) { return r.json(); })
+        .then(function(d) { if (!done) { done = true; clearTimeout(t); cb(d.ip || 'N/A'); } })
+        .catch(function() { if (!done) { done = true; clearTimeout(t); cb('Ẩn danh'); } });
+    } catch(e) { if (!done) { done = true; clearTimeout(t); cb('Ẩn danh'); } }
+  }
+
+  /* ─── STATS UPDATE ─── */
+  function updateAll() {
+    var done = 0, ld = 0;
+    for (var li = 0; li < LINKS.length; li++) {
+      var cd = 0;
+      for (var ti = 0; ti < TASKS.length; ti++) if (isDone(li, ti)) { done++; cd++; }
+      if (cd === TASKS.length) ld++;
+    }
+    var pct = (done / TOTAL * 100).toFixed(2);
+    document.getElementById('chipBal').textContent    = vnd(st.bal);
+    document.getElementById('walBal').textContent     = st.bal.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+    document.getElementById('walEarned').textContent  = vnd(st.earned);
+    document.getElementById('walWithdrawn').textContent = vnd(st.withdrawn);
+    document.getElementById('progDone').textContent   = done;
+    document.getElementById('progFill').style.width   = pct + '%';
+    document.getElementById('btnWithdraw').disabled   = st.bal < MIN_WD;
+    document.getElementById('scDone').textContent     = ld;
+  }
+
+  /* ─── TOAST ─── */
+  var _tt;
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    el.textContent = msg; el.classList.add('show');
+    clearTimeout(_tt); _tt = setTimeout(function() { el.classList.remove('show'); }, 2400);
+  }
+
+  /* ─── ICONS ─── */
+  function ico(id, done) {
+    var c = done ? '#1dc862' : 'currentColor', d = '';
+    switch(id) {
+      case 'like':    d='<path d="M12 21S3 14.8 3 8.5C3 5.5 5.4 3 8.5 3c1.7 0 3.1.9 3.9 2.3L12.5 6l.6-1C13.9 3.7 15.3 3 17 3 20 3 21 5.5 21 8.5 21 14.8 12 21 12 21z" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/>'; break;
+      case 'follow':  d='<circle cx="9" cy="8" r="3.5" stroke="'+c+'" stroke-width="2" fill="none"/><path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M19 8v6M16 11h6" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/>'; break;
+      case 'copy':    d='<path d="M10 13a5 5 0 007.5.5l3-3a5 5 0 00-7-7L12 5" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M14 11a5 5 0 00-7.5-.5l-3 3a5 5 0 007 7L12 19" stroke="'+c+'" stroke-width="2" fill="none" stroke-linecap="round"/>'; break;
+      case 'comment': d='<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="'+c+'" stroke-width="2" fill="none" stroke-linejoin="round"/>'; break;
+      case 'watch':   d='<circle cx="12" cy="12" r="9" stroke="'+c+'" stroke-width="2" fill="none"/><polygon points="10,8.5 16,12 10,15.5" fill="'+c+'"/>'; break;
+    }
+    return '<svg class="tbtn-ico" viewBox="0 0 24 24" aria-hidden="true">'+d+'</svg>';
+  }
+  function checkIco() {
+    return '<svg class="tbtn-ico tbtn-check" viewBox="0 0 24 24"><path d="M4 12l5 6L20 6" stroke="#1dc862" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+  function chevIco() {
+    return '<svg viewBox="0 0 24 24" fill="none" width="18" height="18"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  }
+
+  /* ─── TASK BUTTON ─── */
+  function setBtnState(btn, li, ti) {
+    var t = TASKS[ti], d = isDone(li, ti), isCopy = t.id === 'copy';
+    btn.className = 'tbtn' + (d ? ' done' : '') + (isCopy ? ' copy' : '');
+    if (isCopy) {
+      btn.innerHTML = '<div class="tbtn-top">'+ico(t.id,d)+'<span class="tbtn-name">'+t.name+'</span>'+(d ? checkIco() : '')+'</div><span class="tbtn-reward">'+vnd(t.reward)+'</span>';
+    } else {
+      btn.innerHTML = '<div class="tbtn-top">'+ico(t.id,d)+'<span class="tbtn-name">'+t.name+'</span>'+(d ? checkIco() : '')+'</div><span class="tbtn-reward">'+vnd(t.reward)+'</span>';
+    }
+  }
+
+  function handleTask(li, ti) {
+    if (isDone(li, ti)) return;
+    var t = TASKS[ti], url = LINKS[li];
+    if (t.type === 'copy') {
+      var fb = function() {
+        var ta = document.createElement('textarea'); ta.value = url;
+        ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        try { document.execCommand('copy'); } catch(e) {}
+        document.body.removeChild(ta); toast('Đã sao chép liên kết!');
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText)
+        navigator.clipboard.writeText(url).then(function() { toast('Đã sao chép!'); }).catch(fb);
+      else fb();
+    } else {
+      var a = document.createElement('a'); a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer'; a.style.display = 'none';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+    markDone(li, ti, t.reward);
+    var btn = document.getElementById('tb_'+li+'_'+ti);
+    if (btn) setBtnState(btn, li, ti);
+    refreshCardHead(li); updateAll();
+    toast('+' + vnd(t.reward) + ' — ' + t.name + ' hoàn thành!');
+  }
+
+  function refreshCardHead(li) {
+    var done = 0, earned = 0, all = true;
+    for (var ti = 0; ti < TASKS.length; ti++) {
+      if (isDone(li,ti)) { done++; earned += TASKS[ti].reward; }
+      else all = false;
+    }
+    var card = document.getElementById('lc_'+li); if (!card) return;
+    all ? card.classList.add('complete') : card.classList.remove('complete');
+    var lp = card.querySelector('.lprog'); if (lp) lp.innerHTML = '<span class="n">'+done+'</span>/5 nhiệm vụ';
+    var le = card.querySelector('.lcard-earned'); if (le) le.textContent = earned > 0 ? '+'+vnd(earned) : '';
+  }
+
+  /* ─── CARDS ─── */
+  function buildCard(li) {
+    var done = 0, earned = 0, all = true;
+    for (var ti = 0; ti < TASKS.length; ti++) {
+      if (isDone(li,ti)) { done++; earned += TASKS[ti].reward; } else all = false;
+    }
+    var card = document.createElement('div');
+    card.id = 'lc_'+li; card.className = 'lcard'+(all ? ' complete' : '');
+    var hd = document.createElement('div'); hd.className = 'lcard-hd';
+    hd.innerHTML = '<div class="task-badge">#Task '+(li+1)+'</div><div class="lcard-meta"><div class="lprog"><span class="n">'+done+'</span>/5 nhiệm vụ</div><div class="lcard-earned">'+(earned>0?'+'+vnd(earned):'')+'</div></div><div class="lchev">'+chevIco()+'</div>';
+    hd.addEventListener('click', function() { card.classList.toggle('open'); });
+    var body = document.createElement('div'); body.className = 'lbody'; body.innerHTML = '<div class="sep"></div>';
+    var grid = document.createElement('div'); grid.className = 'tgrid';
+    TASKS.forEach(function(t, ti) {
+      var btn = document.createElement('button'); btn.id = 'tb_'+li+'_'+ti;
+      setBtnState(btn, li, ti);
+      (function(a,b) { btn.addEventListener('click', function() { handleTask(a,b); }); })(li,ti);
+      grid.appendChild(btn);
+    });
+    body.appendChild(grid); card.appendChild(hd); card.appendChild(body);
+    return card;
+  }
+
+  /* ─── TERMS ─── */
+  document.getElementById('termsChk').addEventListener('change', function() {
+    document.getElementById('termsAccept').disabled = !this.checked;
+  });
+  document.getElementById('termsAccept').addEventListener('click', function() {
+    if (document.getElementById('termsChk').checked) {
+      st.termsOk = true; save(); document.getElementById('termsOv').hidden = true;
+    }
+  });
+
+  /* ─── WITHDRAW ─── */
+  document.getElementById('btnWithdraw').addEventListener('click', openWithdraw);
+  document.getElementById('wdClose').addEventListener('click', function() { document.getElementById('wdOv').hidden = true; });
+
+  function bankOptions() {
+    var out = '<option value="">— Chọn ngân hàng / ví —</option>';
+    BANKS.forEach(function(b) { out += '<option>'+b+'</option>'; });
+    return out;
+  }
+
+  function openWithdraw() {
+    document.getElementById('wdTitle').textContent = 'Rút tiền';
+    document.getElementById('wdOv').hidden = false;
+    document.getElementById('wdBody').innerHTML =
+      '<p class="min-note">Số dư hiện tại: <strong>'+vnd(st.bal)+'</strong>. Tối thiểu để rút: <strong>'+vnd(MIN_WD)+'</strong></p>'+
+      '<div class="form-group"><label class="form-label" for="wdBank">Ngân hàng / Ví điện tử</label><select class="form-input" id="wdBank">'+bankOptions()+'</select></div>'+
+      '<div class="form-group"><label class="form-label" for="wdAcc">Số tài khoản / Số điện thoại</label><input class="form-input" id="wdAcc" type="text" placeholder="Nhập số tài khoản hoặc SĐT..."></div>'+
+      '<div class="form-group"><label class="form-label" for="wdName">Tên chủ tài khoản</label><input class="form-input" id="wdName" type="text" placeholder="Nhập họ tên đầy đủ..."></div>'+
+      '<div class="form-group"><label class="form-label" for="wdAmt">Số tiền rút (₫)</label><input class="form-input" id="wdAmt" type="number" min="'+MIN_WD+'" max="'+st.bal+'" value="'+st.bal+'"><div class="form-hint">Tối thiểu <strong>'+vnd(MIN_WD)+'</strong> — tối đa <strong>'+vnd(st.bal)+'</strong></div></div>';
+    document.getElementById('wdFoot').innerHTML = '<button class="btn-primary" id="wdSubmit">Xác nhận rút tiền</button>';
+    document.getElementById('wdSubmit').addEventListener('click', submitWithdraw);
+  }
+
+  function submitWithdraw() {
+    var bank   = (document.getElementById('wdBank') ||{}).value||'';
+    var acc    = (document.getElementById('wdAcc')  ||{}).value.trim()||'';
+    var name   = (document.getElementById('wdName') ||{}).value.trim()||'';
+    var amount = parseInt((document.getElementById('wdAmt')||{}).value||0, 10);
+    if (!bank)                          { toast('Vui lòng chọn ngân hàng / ví.'); return; }
+    if (!acc)                           { toast('Vui lòng nhập số tài khoản.'); return; }
+    if (!name)                          { toast('Vui lòng nhập tên chủ tài khoản.'); return; }
+    if (isNaN(amount)||amount < MIN_WD) { toast('Số tiền tối thiểu ' + vnd(MIN_WD) + '.'); return; }
+    if (amount > st.bal)                { toast('Số tiền vượt quá số dư.'); return; }
+
+    var now = Date.now();
+    var tid = txId();
+    st.bal -= amount; st.withdrawn += amount;
+    st.history.push({ at: now, amount: amount, bank: bank, acc: acc, name: name, txId: tid });
+    save(); updateAll();
+
+    var billData = { txId: tid, at: now, amount: amount, bank: bank, acc: acc, name: name, ip: '...', device: getDevice() };
+    showBill(billData);
+    getIP(function(ip) {
+      billData.ip = ip;
+      var ipEl = document.getElementById('billIP');
+      if (ipEl) ipEl.textContent = ip;
+    });
+  }
+
+  /* ─── BILL ─── */
+  function showBill(data) {
+    document.getElementById('wdTitle').textContent = 'Biên lai giao dịch';
+    document.getElementById('wdBody').innerHTML =
+      '<div class="bill-success-hd">'+
+        '<div class="bill-circle"><svg viewBox="0 0 24 24" fill="none" width="28" height="28"><path d="M4 12l5 6L20 6" stroke="#1dc862" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'+
+        '<h3>Giao dịch thành công</h3>'+
+        '<div class="bill-amount">-'+vnd(data.amount)+'</div>'+
+      '</div>'+
+      '<table class="bill-table">'+
+        '<tr><td>Mã giao dịch</td><td class="mono">'+data.txId+'</td></tr>'+
+        '<tr><td>Thời gian</td><td>'+fmtDate(data.at)+'</td></tr>'+
+        '<tr><td>Địa chỉ IP</td><td id="billIP">'+data.ip+'</td></tr>'+
+        '<tr><td>Thiết bị</td><td>'+data.device+'</td></tr>'+
+        '<tr><td>Ngân hàng / Ví</td><td>'+data.bank+'</td></tr>'+
+        '<tr><td>Số tài khoản</td><td>'+data.acc+'</td></tr>'+
+        '<tr><td>Chủ tài khoản</td><td>'+data.name+'</td></tr>'+
+        '<tr><td>Trạng thái</td><td class="ok">Thành công ✓</td></tr>'+
+      '</table>'+
+      '<div class="bill-export-wrap">'+
+        '<button class="btn-primary" id="btnExport">Xuất biên lai thành ảnh</button>'+
+        '<div class="bill-img-out" id="billImgOut">'+
+          '<img id="billImg" alt="Biên lai TikTask">'+
+          '<div class="bill-img-hint">Nhấn giữ ảnh (mobile) hoặc chuột phải → Lưu ảnh (máy tính) để lưu về</div>'+
+        '</div>'+
+      '</div>';
+    document.getElementById('wdFoot').innerHTML = '<button class="btn-secondary" id="wdDone">Đóng</button>';
+    document.getElementById('wdDone').addEventListener('click', function() { document.getElementById('wdOv').hidden = true; });
+    document.getElementById('btnExport').addEventListener('click', function() { exportBill(data); });
+  }
+
+  function exportBill(data) {
+    var ipVal = (document.getElementById('billIP')||{}).textContent || data.ip;
+    var W = 600;
+    var rows = [
+      ['Mã giao dịch', data.txId],
+      ['Thời gian', fmtDate(data.at)],
+      ['Địa chỉ IP', ipVal],
+      ['Thiết bị', data.device],
+      ['Ngân hàng / Ví', data.bank],
+      ['Số tài khoản', data.acc],
+      ['Chủ tài khoản', data.name],
+      ['Số tiền', vnd(data.amount)],
+      ['Trạng thái', 'Thành công']
+    ];
+    var ROW_H = 46, PAD = 40, TOP_H = 260, H = TOP_H + rows.length * ROW_H + PAD + 70;
+    var canvas = document.createElement('canvas');
+    canvas.width = W * 2; canvas.height = H * 2;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    var ctx = canvas.getContext('2d');
+    ctx.scale(2, 2);
+
+    // background
+    ctx.fillStyle = '#07080a'; ctx.fillRect(0,0,W,H);
+
+    // subtle dot grid
+    ctx.fillStyle = 'rgba(255,255,255,.018)';
+    for (var gx = 20; gx < W; gx += 28)
+      for (var gy = 20; gy < H; gy += 28) {
+        ctx.beginPath(); ctx.arc(gx,gy,1.2,0,Math.PI*2); ctx.fill();
+      }
+
+    // top gradient bar
+    var grd = ctx.createLinearGradient(0,0,W,0);
+    grd.addColorStop(0,'#fe2c55'); grd.addColorStop(1,'#f0b42a');
+    ctx.fillStyle = grd; ctx.fillRect(0,0,W,5);
+
+    // logo
+    var logoY = 48;
+    ctx.font = 'bold 22px system-ui,-apple-system,Arial,sans-serif';
+    ctx.fillStyle = '#dce0f2'; ctx.textAlign = 'left';
+    var tikW = ctx.measureText('Tik').width;
+    ctx.fillText('Tik', PAD, logoY);
+    ctx.fillStyle = '#fe2c55';
+    ctx.fillText('Task', PAD + tikW, logoY);
+
+    // line under logo
+    ctx.strokeStyle = '#1d2234'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD, logoY+14); ctx.lineTo(W-PAD, logoY+14); ctx.stroke();
+
+    // check circle
+    var cx = W/2, cy = 118;
+    ctx.beginPath(); ctx.arc(cx,cy,30,0,Math.PI*2);
+    ctx.fillStyle = '#061510'; ctx.fill();
+    ctx.strokeStyle = '#0b4226'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.strokeStyle = '#1dc862'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(cx-13,cy+1); ctx.lineTo(cx-3,cy+12); ctx.lineTo(cx+14,cy-10); ctx.stroke();
+
+    // success text
+    ctx.fillStyle = '#1dc862'; ctx.textAlign = 'center';
+    ctx.font = 'bold 13px system-ui,-apple-system,Arial,sans-serif';
+    ctx.fillText('GIAO DỊCH THÀNH CÔNG', cx, cy+48);
+
+    // amount
+    ctx.fillStyle = '#f0b42a';
+    ctx.font = 'bold 34px system-ui,-apple-system,Arial,sans-serif';
+    ctx.fillText('-' + vnd(data.amount), cx, cy+90);
+
+    // separator
+    ctx.strokeStyle = '#1d2234'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+    ctx.beginPath(); ctx.moveTo(PAD, TOP_H - 12); ctx.lineTo(W-PAD, TOP_H - 12); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // rows
+    rows.forEach(function(row, i) {
+      var ry = TOP_H + i * ROW_H + ROW_H * 0.7;
+      if (i > 0) {
+        ctx.strokeStyle = '#141820'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(PAD, TOP_H + i*ROW_H + 2); ctx.lineTo(W-PAD, TOP_H + i*ROW_H + 2); ctx.stroke();
+      }
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#4d5470'; ctx.font = '12px system-ui,-apple-system,Arial,sans-serif';
+      ctx.fillText(row[0], PAD, ry);
+      ctx.textAlign = 'right';
+      var isStatus = row[0] === 'Trạng thái', isTx = row[0] === 'Mã giao dịch';
+      ctx.fillStyle = isStatus ? '#1dc862' : '#dce0f2';
+      ctx.font = (isTx ? '600 12px monospace' : '600 12px system-ui,-apple-system,Arial,sans-serif');
+      // wrap long value
+      var val = row[1], maxW = W - PAD*2 - 140;
+      if (ctx.measureText(val).width > maxW) {
+        while (ctx.measureText(val+'...').width > maxW && val.length > 4) val = val.slice(0,-1);
+        val += '...';
+      }
+      ctx.fillText(val, W-PAD, ry);
+    });
+
+    // footer
+    var fy = TOP_H + rows.length * ROW_H + PAD + 10;
+    ctx.strokeStyle = '#1d2234'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(PAD, fy-10); ctx.lineTo(W-PAD, fy-10); ctx.stroke();
+    ctx.fillStyle = '#272b3e'; ctx.textAlign = 'center';
+    ctx.font = '11px system-ui,-apple-system,Arial,sans-serif';
+    ctx.fillText('TikTask — Hệ thống nhiệm vụ TikTok có thưởng', cx, fy+14);
+    ctx.font = '11px system-ui,-apple-system,Arial,sans-serif';
+    ctx.fillText('Biên lai chỉ có giá trị tham khảo nội bộ', cx, fy+32);
+
+    var img = document.getElementById('billImg');
+    img.src = canvas.toDataURL('image/png');
+    var out = document.getElementById('billImgOut');
+    out.style.display = 'block';
+    document.getElementById('btnExport').textContent = 'Đã tạo ảnh — nhấn giữ / chuột phải để lưu';
+    document.getElementById('btnExport').disabled = true;
+  }
+
+  /* ─── INIT ─── */
+  load();
+  var frag = document.createDocumentFragment();
+  for (var i = 0; i < LINKS.length; i++) frag.appendChild(buildCard(i));
+  document.getElementById('list').appendChild(frag);
+  updateAll();
+  if (!st.termsOk) document.getElementById('termsOv').hidden = false;
+})();
+</script>
